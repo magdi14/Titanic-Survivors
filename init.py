@@ -5,16 +5,16 @@ dataSet = pd.read_csv("train.csv")
 
 def initLoad():
     """Loading the data from the dataSet ages, gender, classNum"""
-    ages = np.array(dataSet['Age'], dtype=np.float16)
+    ages = np.array(dataSet['Age'], dtype=np.float64)
     ages = ages.reshape((ages.size, 1))
     ages = isnan(ages)
     #ages = Scale(ages)
 
-    gender = np.array(dataSet['Sex'])
+    gender = np.array(dataSet['Sex'], dtype=np.float64)
     gender = gender.reshape((gender.size, 1))
     gender = Gender(gender)
 
-    classNum = np.array(dataSet['Pclass'])
+    classNum = np.array(dataSet['Pclass'], dtype=np.float64)
     classNum = classNum.reshape((classNum.size, 1))
     #classNum = Scale(classNum)
 
@@ -55,8 +55,8 @@ def predictedY(thetas, features):
 
 
 def hyposisFN(thetas, features):
-    z = np.array(np.dot(thetas, features), dtype=np.float16)
-    pre = np.array(1 / (1 + np.exp(-z)), dtype=np.float16)
+    z = np.array(np.dot(thetas, features), dtype=np.float64)
+    pre = np.array(1 / (1 + np.exp(-z)), dtype=np.float64)
     return pre
 
 
@@ -68,7 +68,7 @@ def gradientDescent(thetas, features, Y, alpha, iterations):        #Victorized 
     m = len(Y)
     for i in range(iterations):
         derv = (hyposisFN(thetas, features) - Y)
-        thetas = thetas - ((alpha/m) * np.dot(features.transpose(), derv))
+        thetas = thetas - ((alpha/m) * np.dot(features, derv.transpose()))
 
     return thetas
 
@@ -88,13 +88,14 @@ def main():
 
     print(thetas.shape, fet.shape, y.shape)
     pr = hyposisFN(thetas, fet)
-    #thetas = gradientDescent(thetas, fet, y, 0.01, 100)
-    ypre = predictedY(thetas, fet)
-    print(ypre)
+    thetas = gradientDescent(thetas, fet, y.transpose(), 0.1, 600)
+    #ypre = predictedY(thetas, fet)
+    print(thetas)
     #print(y)
     #z, on = cnt(y)
     #print(z, on)
-    cost = costFN(thetas, fet, y)
+    print(thetas.shape, fet.shape, y.shape)
+    #cost = costFN(thetas, fet, y)
 
     #print(cost)
     #print(pr)
