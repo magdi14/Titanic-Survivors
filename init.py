@@ -49,6 +49,10 @@ def decision(yPredicted):
     else:
         return 0
 
+def predictedY(thetas, features):
+    y = np.array(list((map(decision, hyposisFN(theta, features)))))
+    return y
+
 
 def hyposisFN(thetas, features):
     z = np.array(np.dot(thetas, features), dtype=np.float16)
@@ -60,11 +64,11 @@ def costFN(thetas, features, Y):
     m = len(features)
     return -1 / m * (sum(Y * np.log(hyposisFN(thetas, features)) + (1-Y) * np.log(1 - hyposisFN(thetas, features))))
 
-def gradientDescent(thetas, features, Y, alpha, iterations):  # Victorized Implementation
+def gradientDescent(thetas, features, Y, alpha, iterations):        #Victorized Implementation
     m = len(Y)
     for i in range(iterations):
         derv = (hyposisFN(thetas, features) - Y)
-        thetas = thetas - ((alpha/m) * np.dot(features, derv))
+        thetas = thetas - ((alpha/m) * np.dot(features.transpose(), derv))
 
     return thetas
 
@@ -81,16 +85,18 @@ def cnt(Y):
 def main():
     fet, y = initLoad()
     thetas = np.zeros((1, fet.shape[0]))
-    #thetas = gradientDescent(thetas, fet, y, 0.01, 100)
-    print(thetas.shape, fet.shape)
+
+    print(thetas.shape, fet.shape, y.shape)
     pr = hyposisFN(thetas, fet)
-    #print(pr)
+    #thetas = gradientDescent(thetas, fet, y, 0.01, 100)
+    ypre = predictedY(thetas, fet)
+    print(ypre)
     #print(y)
-    z, on = cnt(y)
-    print(z, on)
+    #z, on = cnt(y)
+    #print(z, on)
     cost = costFN(thetas, fet, y)
 
-    print(cost)
+    #print(cost)
     #print(pr)
 
 
