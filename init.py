@@ -23,6 +23,7 @@ def initLoad():
     Y = Y.reshape(Y.size, 1)
     X0 = np.ones( (m, 1) )
     fet = np.stack((X0, ages, classNum, gender))
+    fet = fet.reshape((4, 891))
     return fet, Y
 
 def Gender(gender):
@@ -57,23 +58,38 @@ def hyposisFN(thetas, features):
 
 def costFN(thetas, features, Y):
     m = len(features)
-    return (-1 * sum(Y * np.log(hyposisFN(thetas.transpose(), features)) + (1 + Y) * np.log(1 - hyposisFN(thetas.transpose(), features))) / m)
-
+    return -1 / m * (sum(Y * np.log(hyposisFN(thetas, features)) + (1-Y) * np.log(1 - hyposisFN(thetas, features))))
 
 def gradientDescent(thetas, features, Y, alpha, iterations):  # Victorized Implementation
-    m = len(features)
+    m = len(Y)
     for i in range(iterations):
-        val = (hyposisFN(thetas.transpose(), features) - Y)
-        #thetas = thetas - (alpha/m )* (np.dot(features, val))
-    return val.shape
+        derv = (hyposisFN(thetas, features) - Y)
+        thetas = thetas - ((alpha/m) * np.dot(features, derv))
 
+    return thetas
+
+def cnt(Y):
+    sz = len(Y)
+    z = one = 0
+    for i in range(sz):
+        if Y[i] == 0:
+            z+=1
+        else:
+            one+=1
+    return z, one
 
 def main():
     fet, y = initLoad()
-    thetas = np.zeros((fet.shape[0], 1))
-    fet = fet.reshape((4, 891))
-   # pr = hyposisFN(thetas.transpose(), fet)
-    cost = gradientDescent(thetas, fet, y, 0.1, 150)
+    thetas = np.zeros((1, fet.shape[0]))
+    #thetas = gradientDescent(thetas, fet, y, 0.01, 100)
+    print(thetas.shape, fet.shape)
+    pr = hyposisFN(thetas, fet)
+    #print(pr)
+    #print(y)
+    z, on = cnt(y)
+    print(z, on)
+    cost = costFN(thetas, fet, y)
+
     print(cost)
     #print(pr)
 
